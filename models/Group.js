@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const GroupSchema = new mongoose.Schema({
   name: {
@@ -101,6 +102,12 @@ const GroupSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+});
+
+// Create group slug from submitted name
+GroupSchema.pre('save', function(next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
 });
 
 module.exports = mongoose.model('Group', GroupSchema);
