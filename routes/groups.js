@@ -5,8 +5,11 @@ const {
   getGroup,
   createGroup,
   updateGroup,
-  deleteGroup
+  deleteGroup,
+  getGroupsInRadius
 } = require('../controllers/groups');
+
+router.route('/radius/:zipcode/:distance').get(getGroupsInRadius);
 
 router
   .route('/')
