@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const {
   getGroups,
   getGroup,
@@ -8,6 +7,14 @@ const {
   deleteGroup,
   getGroupsInRadius
 } = require('../controllers/groups');
+
+// Include other resource routers to redirect
+const meetupRouter = require('./meetups');
+
+const router = express.Router();
+
+// Reroute into other resource routers
+router.use('/:groupId/meetups', meetupRouter);
 
 router.route('/radius/:zipcode/:distance').get(getGroupsInRadius);
 

@@ -13,6 +13,7 @@ connectDB();
 
 // Route files
 const groups = require('./routes/groups');
+const meetups = require('./routes/meetups');
 
 // Init app
 const app = express();
@@ -27,6 +28,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routers
 app.use('/api/v1/groups', groups);
+app.use('/api/v1/meetups', meetups);
 
 // Mount errorHandler middleware last
 app.use(errorHandler);

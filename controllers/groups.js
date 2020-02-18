@@ -21,7 +21,10 @@ exports.getGroups = asyncHandler(async (req, res, next) => {
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
   // Find resources
-  query = Group.find(JSON.parse(queryStr));
+  query = Group.find(JSON.parse(queryStr)).populate({
+    path: 'meetups',
+    select: 'title description'
+  });
 
   // Select fields to send back
   if (req.query.select) {
@@ -77,7 +80,10 @@ exports.getGroups = asyncHandler(async (req, res, next) => {
 // @route     GET /api/V1/groups/:id
 // @access    Public
 exports.getGroup = asyncHandler(async (req, res, next) => {
-  const group = await Group.findById(req.params.id);
+  const group = await Group.findById(req.params.id).populate({
+    path: 'meetups',
+    select: 'title description'
+  });
   if (!group) {
     return next(
       new ErrorResponse(`Group not found with id:${req.params.id}`, 404)
@@ -97,7 +103,22 @@ exports.createGroup = asyncHandler(async (req, res, next) => {
 // @desc      Update group
 // @route     PUT /api/V1/groups/:id
 // @access    Private
+// TODO!: if update address, run geocoder again
 exports.updateGroup = asyncHandler(async (req, res, next) => {
+  if (req.body.address) {
+    const loc = await geocoder.geocode(req.body.address);
+    req.body.location = {
+      type: 'Point',
+      coordinates: [loc[0].longitude, loc[0].latitude],
+      formattedAddress: loc[0].formattedAddress,
+      street: loc[0].streetName,
+      city: loc[0].city,
+      state: loc[0].stateCode,
+      zipcode: loc[0].zipcode,
+      country: loc[0].countryCode
+    };
+  }
+
   const group = await Group.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true
@@ -114,12 +135,13 @@ exports.updateGroup = asyncHandler(async (req, res, next) => {
 // @route     DELETE /api/V1/groups/:id
 // @access    Private
 exports.deleteGroup = asyncHandler(async (req, res, next) => {
-  const group = await Group.findByIdAndDelete(req.params.id);
+  const group = await Group.findById(req.params.id);
   if (!group) {
     return next(
       new ErrorResponse(`Group not found with id:${req.params.id}`, 404)
     );
   }
+  await group.remove();
   res.status(200).json({ success: true, data: {} });
 });
 
