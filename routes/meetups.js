@@ -7,11 +7,20 @@ const {
   deleteMeetup
 } = require('../controllers/meetups');
 
+const Meetup = require('../models/Meetup');
+const advancedResults = require('../middleware/advancedResults');
+
 const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
-  .get(getMeetups)
+  .get(
+    advancedResults(Meetup, {
+      path: 'group',
+      select: 'name description'
+    }),
+    getMeetups
+  )
   .post(createMeetup);
 
 router

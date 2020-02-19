@@ -10,21 +10,15 @@ const Group = require('../models/Group');
 // @access    Public
 
 exports.getMeetups = asyncHandler(async (req, res, next) => {
-  let query;
-  if (req.params.groupId) {
-    query = Meetup.find({ group: req.params.groupId }).populate({
-      path: 'group',
-      select: 'name description'
-    });
-  } else {
-    query = Meetup.find().populate({
-      path: 'group',
-      select: 'name description'
-    });
-  }
-  const meetups = await query;
-
-  res.status(200).json({ success: true, count: meetups.length, data: meetups });
+  // TODO: if getting meetups for a specific group, don't use advancedResults middleware (currently, still passes through)
+  // if (req.params.groupId) {
+  //   const meetups = await Meetup.find({ group: req.params.groupId });
+  //   return res
+  //     .status(200)
+  //     .json({ success: true, count: meetups.length, data: meetups });
+  // } else {
+  res.status(200).json(res.advancedResults);
+  // }
 });
 
 // @desc      Get single meetup

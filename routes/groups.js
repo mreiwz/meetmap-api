@@ -5,8 +5,12 @@ const {
   createGroup,
   updateGroup,
   deleteGroup,
-  getGroupsInRadius
+  getGroupsInRadius,
+  groupPhotoUpload
 } = require('../controllers/groups');
+
+const Group = require('../models/Group');
+const advancedResults = require('../middleware/advancedResults');
 
 // Include other resource routers to redirect
 const meetupRouter = require('./meetups');
@@ -18,9 +22,11 @@ router.use('/:groupId/meetups', meetupRouter);
 
 router.route('/radius/:zipcode/:distance').get(getGroupsInRadius);
 
+router.route('/:id/photo').put(groupPhotoUpload);
+
 router
   .route('/')
-  .get(getGroups)
+  .get(advancedResults(Group, 'meetups'), getGroups)
   .post(createGroup);
 
 router

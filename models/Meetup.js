@@ -42,7 +42,6 @@ const MeetupSchema = mongoose.Schema({
 
 // Static method to get average of meetup costs for a specific group
 MeetupSchema.statics.getAverageCost = async function(groupId) {
-  console.log(`Calculating average cost...`.blue);
   const obj = await this.aggregate([
     { $match: { group: groupId } },
     { $group: { _id: '$group', averageCost: { $avg: '$cost' } } }
@@ -63,13 +62,13 @@ MeetupSchema.statics.getAverageCost = async function(groupId) {
 };
 
 // Call getAverageCost after saving a meetup
-MeetupSchema.post('save', function() {
-  this.constructor.getAverageCost(this.group);
+MeetupSchema.post('save', async function() {
+  await this.constructor.getAverageCost(this.group);
 });
 
 // Call getAverageCost after deleting a meetup
-MeetupSchema.post('remove', function() {
-  this.constructor.getAverageCost(this.group);
+MeetupSchema.post('remove', async function() {
+  await this.constructor.getAverageCost(this.group);
 });
 
 module.exports = mongoose.model('Meetup', MeetupSchema);
