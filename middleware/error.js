@@ -25,6 +25,12 @@ const errorHandler = (err, req, res, next) => {
     error = new ErrorResponse(message, 400);
   }
 
+  // Authentication JsonWebTokenError
+  if (err.name === 'JsonWebTokenError') {
+    const message = `Unauthorized to access this resource, check your credentials and try again`;
+    error = new ErrorResponse(message, 401);
+  }
+
   res.status(error.statusCode || 500).json({
     success: false,
     error: error.message || `There was a server error, try again`

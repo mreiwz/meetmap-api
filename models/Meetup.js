@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const MeetupSchema = mongoose.Schema({
+const MeetupSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'Please add a meetup title'],
@@ -31,7 +31,8 @@ const MeetupSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    immutable: true
   },
   group: {
     type: mongoose.Schema.ObjectId,

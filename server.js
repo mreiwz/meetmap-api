@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
 const fileupload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
 
@@ -16,12 +17,16 @@ connectDB();
 // Route files
 const groups = require('./routes/groups');
 const meetups = require('./routes/meetups');
+const auth = require('./routes/auth');
 
 // Init app
 const app = express();
 
 // BodyParser
 app.use(express.json());
+
+// CookieParser
+app.use(cookieParser());
 
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {
@@ -37,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Mount routers
 app.use('/api/v1/groups', groups);
 app.use('/api/v1/meetups', meetups);
+app.use('/api/v1/auth', auth);
 
 // Mount errorHandler middleware last
 app.use(errorHandler);

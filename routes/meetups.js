@@ -12,6 +12,9 @@ const advancedResults = require('../middleware/advancedResults');
 
 const router = express.Router({ mergeParams: true });
 
+// Bring in protect from auth middleware in order to protect routes
+const { protect } = require('../middleware/auth');
+
 router
   .route('/')
   .get(
@@ -21,12 +24,12 @@ router
     }),
     getMeetups
   )
-  .post(createMeetup);
+  .post(protect, createMeetup);
 
 router
   .route('/:id')
   .get(getMeetup)
-  .put(updateMeetup)
-  .delete(deleteMeetup);
+  .put(protect, updateMeetup)
+  .delete(protect, deleteMeetup);
 
 module.exports = router;

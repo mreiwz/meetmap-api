@@ -17,22 +17,26 @@ const meetupRouter = require('./meetups');
 
 const router = express.Router();
 
+// Bring in protect from auth middleware in order to protect routes
+const { protect } = require('../middleware/auth');
+
 // Reroute into other resource routers
 router.use('/:groupId/meetups', meetupRouter);
 
+//Routes
 router.route('/radius/:zipcode/:distance').get(getGroupsInRadius);
 
-router.route('/:id/photo').put(groupPhotoUpload);
+router.route('/:id/photo').put(protect, groupPhotoUpload);
 
 router
   .route('/')
   .get(advancedResults(Group, 'meetups'), getGroups)
-  .post(createGroup);
+  .post(protect, createGroup);
 
 router
   .route('/:id')
   .get(getGroup)
-  .put(updateGroup)
-  .delete(deleteGroup);
+  .put(protect, updateGroup)
+  .delete(protect, deleteGroup);
 
 module.exports = router;
