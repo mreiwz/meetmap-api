@@ -33,6 +33,20 @@ exports.getGroup = asyncHandler(async (req, res, next) => {
 // @route     POST /api/V1/groups
 // @access    Private
 exports.createGroup = asyncHandler(async (req, res, next) => {
+  // Include userId in req.body so that the user field can be filled
+  req.body.user = req.user.id;
+  // If user is not admin, check if user has already published group
+  if (req.user.role !== 'admin') {
+    const publishedGroup = await Group.findOne({ user: req.user.id });
+    if (publishedGroup) {
+      return next(
+        new ErrorResponse(
+          `User ${req.user.id} has already published a group`,
+          400
+        )
+      );
+    }
+  }
   const group = await Group.create(req.body);
   res.status(201).json({ success: true, data: group });
 });
@@ -55,15 +69,11 @@ exports.updateGroup = asyncHandler(async (req, res, next) => {
     };
   }
 
-  const group = await Group.findByIdAndUpdate(req.params.id, req.body, {
+  group = await Group.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true
   });
-  if (!group) {
-    return next(
-      new ErrorResponse(`Group not found with id:${req.params.id}`, 404)
-    );
-  }
+
   res.status(200).json({ success: true, data: group });
 });
 
@@ -71,12 +81,6 @@ exports.updateGroup = asyncHandler(async (req, res, next) => {
 // @route     DELETE /api/V1/groups/:id
 // @access    Private
 exports.deleteGroup = asyncHandler(async (req, res, next) => {
-  const group = await Group.findById(req.params.id);
-  if (!group) {
-    return next(
-      new ErrorResponse(`Group not found with id:${req.params.id}`, 404)
-    );
-  }
   // Delete photo from files if group had one
   if (group.photo !== 'no-photo.jpg') {
     const file = `${process.env.FILE_UPLOAD_PATH}/${group.photo}`;
@@ -114,14 +118,6 @@ exports.getGroupsInRadius = asyncHandler(async (req, res, next) => {
 // @route     PUT /api/V1/groups/:id/photo
 // @access    Private
 exports.groupPhotoUpload = asyncHandler(async (req, res, next) => {
-  const group = await Group.findById(req.params.id);
-
-  if (!group) {
-    return next(
-      new ErrorResponse(`Group not found with id:${req.params.id}`, 404)
-    );
-  }
-
   if (!req.files) {
     return next(new ErrorResponse(`Please upload a photo`, 400));
   }

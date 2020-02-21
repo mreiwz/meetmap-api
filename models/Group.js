@@ -104,6 +104,11 @@ const GroupSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
       immutable: true
+    },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: true
     }
   },
   {

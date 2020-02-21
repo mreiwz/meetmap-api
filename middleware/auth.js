@@ -35,3 +35,38 @@ exports.protect = asyncHandler(async (req, res, next) => {
   req.user = await User.findById(decoded.id);
   next();
 });
+
+// Grant access to specific roles
+exports.authorize = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return next(
+      new ErrorResponse(
+        `Forbidden: user role ${req.user.role} unauthorized to access this resource`,
+        403
+      )
+    );
+  }
+  next();
+};
+
+// Check existence and ownership of resource
+exports.checkExistenceOwnership = model =>
+  asyncHandler(async (req, res, next) => {
+    let resource = await model.findById(req.params.id);
+    // Check that resource exists
+    if (!resource) {
+      return next(
+        new ErrorResponse(`Resource not found with id:${req.params.id}`, 404)
+      );
+    }
+    // If resource exists, make sure user owns the resource, unless they're admin
+    if (req.user.role !== 'admin' && resource.user.toString() !== req.user.id) {
+      return next(
+        new ErrorResponse(
+          `You don't have permission to modify that resource`,
+          401
+        )
+      );
+    }
+    next();
+  });

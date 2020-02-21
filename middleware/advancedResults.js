@@ -4,11 +4,9 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
   // Make copy of req.query
   const reqQuery = { ...req.query };
-  console.log(reqQuery);
   if (req.params.groupId) {
     reqQuery.group = req.params.groupId;
   }
-  console.log(reqQuery);
 
   // Create array of fields to exclude, not to be matched for filtering
   const removeFields = ['select', 'sort', 'page', 'limit'];

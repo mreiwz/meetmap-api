@@ -41,7 +41,7 @@ exports.getMeetup = asyncHandler(async (req, res, next) => {
 // @route     POST /api/V1/groups/:groupId/meetups
 // @access    Private
 exports.createMeetup = asyncHandler(async (req, res, next) => {
-  // Include :groupId in req.body so that the field can be filled
+  // Include :groupId in req.body so that the group field can be filled
   req.body.group = req.params.groupId;
   const group = await Group.findById(req.params.groupId);
   if (!group) {

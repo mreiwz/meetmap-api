@@ -49,14 +49,9 @@ MeetupSchema.statics.getAverageCost = async function(groupId) {
   ]);
 
   try {
-    await this.model('Group').findByIdAndUpdate(
-      groupId,
-      obj[0]
-        ? {
-            averageCost: Math.ceil(obj[0].averageCost)
-          }
-        : { averageCost: undefined }
-    );
+    await this.model('Group').findByIdAndUpdate(groupId, {
+      averageCost: obj.length > 0 ? Math.ceil(obj[0].averageCost) : undefined
+    });
   } catch (err) {
     console.error(err);
   }
