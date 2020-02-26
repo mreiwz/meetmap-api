@@ -52,7 +52,7 @@ exports.authorize = (...roles) => (req, res, next) => {
 // Check existence and ownership of resource
 exports.checkExistenceOwnership = model =>
   asyncHandler(async (req, res, next) => {
-    let resource = await model.findById(req.params.id);
+    resource = await model.findById(req.params.id);
     // Check that resource exists
     if (!resource) {
       return next(

@@ -38,17 +38,12 @@ exports.getMeetup = asyncHandler(async (req, res, next) => {
 });
 
 // @desc      Create new meetup for a specific single group
-// @route     POST /api/V1/groups/:groupId/meetups
+// @route     POST /api/V1/groups/:id/meetups
 // @access    Private
 exports.createMeetup = asyncHandler(async (req, res, next) => {
-  // Include :groupId in req.body so that the group field can be filled
-  req.body.group = req.params.groupId;
-  const group = await Group.findById(req.params.groupId);
-  if (!group) {
-    return next(
-      new ErrorResponse(`Group not found with id:${req.params.groupId}`, 404)
-    );
-  }
+  // Include :id in req.body so that the group field can be filled
+  req.body.group = req.params.id;
+  req.body.user = req.user.id;
   const meetup = await Meetup.create(req.body);
   res.status(201).json({ success: true, data: meetup });
 });
@@ -57,28 +52,18 @@ exports.createMeetup = asyncHandler(async (req, res, next) => {
 // @route     PUT /api/V1/meetups/:id
 // @access    Private
 exports.updateMeetup = asyncHandler(async (req, res, next) => {
-  const meetup = await Meetup.findByIdAndUpdate(req.params.id, req.body, {
+  resource = await Meetup.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true
   });
-  if (!meetup) {
-    return next(
-      new ErrorResponse(`Meetup not found with id:${req.params.id}`, 404)
-    );
-  }
-  res.status(200).json({ success: true, data: meetup });
+
+  res.status(200).json({ success: true, data: resource });
 });
 
 // @desc      Delete meetup
 // @route     DELETE /api/V1/meetups/:id
 // @access    Private
 exports.deleteMeetup = asyncHandler(async (req, res, next) => {
-  const meetup = await Meetup.findById(req.params.id);
-  if (!meetup) {
-    return next(
-      new ErrorResponse(`Group not found with id:${req.params.id}`, 404)
-    );
-  }
-  await meetup.remove();
+  await resource.remove();
   res.status(200).json({ success: true, data: {} });
 });

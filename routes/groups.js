@@ -24,8 +24,8 @@ const {
   checkExistenceOwnership
 } = require('../middleware/auth');
 
-// Reroute into other resource routers
-router.use('/:groupId/meetups', meetupRouter);
+// Reroute into other resource routers, id is groupId
+router.use('/:id/meetups', meetupRouter);
 
 //Routes
 router.route('/radius/:zipcode/:distance').get(getGroupsInRadius);

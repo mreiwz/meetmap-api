@@ -69,12 +69,12 @@ exports.updateGroup = asyncHandler(async (req, res, next) => {
     };
   }
 
-  group = await Group.findByIdAndUpdate(req.params.id, req.body, {
+  resource = await Group.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true
   });
 
-  res.status(200).json({ success: true, data: group });
+  res.status(200).json({ success: true, data: resource });
 });
 
 // @desc      Delete group
@@ -82,8 +82,8 @@ exports.updateGroup = asyncHandler(async (req, res, next) => {
 // @access    Private
 exports.deleteGroup = asyncHandler(async (req, res, next) => {
   // Delete photo from files if group had one
-  if (group.photo !== 'no-photo.jpg') {
-    const file = `${process.env.FILE_UPLOAD_PATH}/${group.photo}`;
+  if (resource.photo !== 'no-photo.jpg') {
+    const file = `${process.env.FILE_UPLOAD_PATH}/${resource.photo}`;
     if (fs.existsSync(file)) {
       console.log(
         `Middleware running: deleting photo from group ${req.params.id}`
@@ -91,7 +91,7 @@ exports.deleteGroup = asyncHandler(async (req, res, next) => {
       fs.unlinkSync(file);
     }
   }
-  await group.remove();
+  await resource.remove();
   res.status(200).json({ success: true, data: {} });
 });
 

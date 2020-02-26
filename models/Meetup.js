@@ -38,6 +38,11 @@ const MeetupSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Group',
     required: true
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: true
   }
 });
 

@@ -8,12 +8,17 @@ const {
 } = require('../controllers/meetups');
 
 const Meetup = require('../models/Meetup');
+const Group = require('../models/Group');
 const advancedResults = require('../middleware/advancedResults');
 
 const router = express.Router({ mergeParams: true });
 
 // Bring in protect and authorize from auth middleware in order to protect routes
-const { protect, authorize } = require('../middleware/auth');
+const {
+  protect,
+  authorize,
+  checkExistenceOwnership
+} = require('../middleware/auth');
 
 router
   .route('/')
@@ -24,12 +29,27 @@ router
     }),
     getMeetups
   )
-  .post(protect, authorize('publisher', 'admin'), createMeetup);
+  .post(
+    protect,
+    authorize('publisher', 'admin'),
+    checkExistenceOwnership(Group),
+    createMeetup
+  );
 
 router
   .route('/:id')
   .get(getMeetup)
-  .put(protect, authorize('publisher', 'admin'), updateMeetup)
-  .delete(protect, authorize('publisher', 'admin'), deleteMeetup);
+  .put(
+    protect,
+    authorize('publisher', 'admin'),
+    checkExistenceOwnership(Meetup),
+    updateMeetup
+  )
+  .delete(
+    protect,
+    authorize('publisher', 'admin'),
+    checkExistenceOwnership(Meetup),
+    deleteMeetup
+  );
 
 module.exports = router;

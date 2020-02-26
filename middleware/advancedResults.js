@@ -2,10 +2,10 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   // Test
   console.log(`Passing through advancedResults middleware...`);
 
-  // Make copy of req.query
+  // Make copy of req.query, id is groupId
   const reqQuery = { ...req.query };
-  if (req.params.groupId) {
-    reqQuery.group = req.params.groupId;
+  if (req.params.id) {
+    reqQuery.group = req.params.id;
   }
 
   // Create array of fields to exclude, not to be matched for filtering
