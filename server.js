@@ -18,6 +18,7 @@ connectDB();
 const groups = require('./routes/groups');
 const meetups = require('./routes/meetups');
 const auth = require('./routes/auth');
+const users = require('./routes/users');
 
 // Init app
 const app = express();
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/groups', groups);
 app.use('/api/v1/meetups', meetups);
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/users', users);
 
 // Mount errorHandler middleware last
 app.use(errorHandler);

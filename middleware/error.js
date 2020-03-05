@@ -15,7 +15,7 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose duplicate key
   if (err.code === 11000) {
-    const message = `That name already exists`;
+    const message = `That name or email already exists`;
     error = new ErrorResponse(message, 400);
   }
 
@@ -25,9 +25,21 @@ const errorHandler = (err, req, res, next) => {
     error = new ErrorResponse(message, 400);
   }
 
+  // SyntaxError
+  if (err.name === 'SyntaxError') {
+    const message = `Bad request, check your inputs and try again`;
+    error = new ErrorResponse(message, 400);
+  }
+
   // Authentication JsonWebTokenError
   if (err.name === 'JsonWebTokenError') {
     const message = `Unauthorized to access this resource, check your credentials and try again`;
+    error = new ErrorResponse(message, 401);
+  }
+
+  // Authentication TokenExpiredError
+  if (err.name === 'TokenExpiredError') {
+    const message = `Session expired, please log in again`;
     error = new ErrorResponse(message, 401);
   }
 
